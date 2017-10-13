@@ -1,0 +1,39 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        {{pagetitle}}
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="coupon-container">
+    <ul class="cou-list">
+        {% for item in list %}
+        <li class="list-item" onclick="location.href='/cart/confirm?coupon={{item.id}}'">
+            <div class="left">
+                <div class="title">
+                    <span>
+                        {% if item.keytype == '1' %}全平台{% endif %}
+                        {% if item.keytype == '2' %}指定分类{% endif %}
+                        {% if item.keytype == '3' %}固定商品{% endif %}
+                    </span>
+                    使用
+                </div>
+                <div class="price">满<i>{{item.minprice}}</i>使用</div>
+                <div class="time">有效期至<span>{{item.endtime}}</span></div>
+            </div>
+            <div class="right">￥<i>{{item.price}}</i></div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

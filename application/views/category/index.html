@@ -1,0 +1,53 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/zb-wsc.css" />
+<header class="my-header-wrap">
+    <h1>分类</h1>
+</header>
+<div class="container"/>
+<div class="classify-wrap am-g">
+    <div class="classify-list am-u-sm-3">
+        <ul>
+            {% for item in list %}
+            <li {% if item.istop > 0 %}class="active"{% endif %} onclick="location.href='?cid={{item.id}}'">{{item.name}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="classify-content am-u-sm-9">
+        {% for item in childlist %}
+        <div class="am-u-sm-4 am-u-end">
+            <a href="/index/new?cateid={{item.id}}">
+                <figure>
+                    <div>
+                        <img src="{{item.imgurl}}">
+                    </div>
+                    <figcaption>{{item.name}}</figcaption>
+                </figure>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% include '/navbar.html' %}
+{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        /*$('.classify-list li').on('click', function () {
+            $('.classify-list li').each(function () {
+                $(this).removeClass('active');
+            })
+            $(this).addClass('active')
+        })*/
+        //高度自适应
+        console.log()
+        if ($('.classify-list').height() < window.screen.height) {
+            $('.classify-content').height(window.screen.height + 'px')
+        } else {
+            $('.classify-content').height($('.classify-list').height() + 'px')
+        }
+
+    })
+</script>
+{% endblock %}

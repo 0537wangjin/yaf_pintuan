@@ -1,0 +1,69 @@
+{% extends '/layout_index.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<header class="my-header-wrap">
+    <a class="icon-back" onclick="history.go(-1)"></a>
+    <h1>参团</h1>
+</header>
+<div class="group-purchase-wrap">
+    <div class="confirm-order-md am-cf">
+        <div class="am-fl">
+            <img src="{{goods.imgurl}}"/>
+        </div>
+        <div class="confirm-order-content">
+            <h3>{{goods.name}}</h3>
+            <b>￥{{goods.rushprice}}</b><span>{{goods.rushnum}}人团</span>
+        </div>
+    </div>
+    <div class="group-purchase">
+        <ul class="am-cf group-purchase-six">
+            {% for r in tuanuser %}
+            <li class="list-item"><img style="border-radius:50%;" src="{{r.avatar}}" alt="" width="31" height="31">{% if r.pid < 1 %}<span>拼主</span>{% endif %}</li>
+            {% endfor %}
+            {% for i in 1..rush.surplus %}
+            <li class="list-item"><img src="/assets/img/tt-qu.png" alt="" width="31" height="31"></li>
+            {% endfor %}
+        </ul>
+        <p>仅剩<b>{{rush.surplus}}</b>个名额，<b>{{rush.sec}}后结束</b></p>
+        <div class="btn-wrap">
+            <button id="popup-btn" onclick="rushjoin()">一键参团</button>
+        </div>
+    </div>
+    <div class="group-notice">
+        <img src="/assets/img/zb__33.png"/>
+        <p>参团须知：人满发货/人不满退款</p>
+    </div>
+</div>
+<!--底部弹出-->
+<div class="popup-btm">
+    <div class="popup-infor">
+        <span class="icon-x"></span>
+        <img src="/assets/img/zb_1.png"/>
+        <p>￥39.50</p>
+    </div>
+    <div class="confirm-order-btm">
+        购买数量:
+        <div class="goods-number">
+            <span class="icon-jian"></span>
+            <b>20</b>
+            <span class="icon-jia"></span>
+        </div>
+    </div>
+    <button id="make-sure">确定</button>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    function rushjoin() {
+        $.get('/index/cartAddRush?goodsid={{rush.goodsid}}', function (res) {
+            if (res == 'success') {
+                location.href='/cart/confirm?goods={{rush.goodsid}}&rush=1&rushid={{rush.id}}';
+            } else {
+                mask(res, ' ');
+            }
+        });
+    }
+</script>
+{% endblock %}

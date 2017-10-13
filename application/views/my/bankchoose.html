@@ -1,0 +1,60 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/takebank" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        选择开户行
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:save();" class="">
+            <i class="tt-right">保存</i>
+        </a>
+    </div>
+</header>
+<div class="eb-container">
+    <ul class="bank-list">
+        <li class="list-item"><span>中国银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>工商银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>中国银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>建设银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>农业银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>招商银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>兴业银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>北京银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>广发银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>华夏银行</span><i class="submit"></i></li>
+        <li class="list-item"><span>中信银行</span><i class="submit"></i></li>
+    </ul>
+</div>
+
+</body>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    var bank = '';
+    $(function () {
+        $('.bank-list li').on('click', function () {
+            $(this).children('.submit').show().parent('li').siblings().children('.submit').hide();
+            bank = $(this).text();
+        });
+    });
+
+    function save()
+    {
+        $.get('/my/bankchooseSave?bank=' + bank, function (res) {
+            if (res == 'success') {
+                mask('保存成功!');
+                setTimeout(function () {
+                    location.href = '/my/bank';
+                }, 1000)
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock %}

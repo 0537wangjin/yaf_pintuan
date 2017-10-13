@@ -1,0 +1,27 @@
+{% extends '/layout_index.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<header class="my-header-wrap">
+    <a class="icon-back" href="/index"></a>
+    <h1>{{pagetitle}}</h1>
+</header>
+<div class="container">
+    <div class="integral-exchange-wrap">
+        <div class="confirm-order-wrap">
+            {% for item in list %}
+            <div class="confirm-order-md am-cf" onclick="location.href='/index/goldDetails?id={{item.id}}'">
+                <div class="am-fl">
+                    <img src="{{item.imgurl}}"/>
+                </div>
+                <div class="confirm-order-content">
+                    <h3>{{item.title}}</h3>
+                    <b class="integral">{{item.coins}}积分</b>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        申请退款
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<!--详情-->
+<div class="iod-container">
+    <div class="content">
+        <!--商品详情-->
+        <ul class="order-list">
+            <li class="list-item">
+                <a class="href-item">
+                    {% for item in order.goodslist %}
+                    <div class="center">
+                        <div class="img"><img src="{{item.imgurl}}"/></div>
+                        <div class="content">
+                            <p class="name">{{item.name}}</p>
+                            <div class="infor am-cf">
+                                <div class="integral am-fl">￥<i>{{item.goodsprice}}</i></div>
+                                <!--当一个订单中有多个商品时放开此标签-->
+                                <!--<a href="javascript:;" class="btn am-fr red">去评价</a>-->
+                                <div class="num am-fr">数量：<i>{{item.buycount}}</i></div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="bottom am-cf">
+                        <div class="left am-fl">
+                            <div class="num">共<i>{{order.item_count}}</i>件商品</div>
+                            <div class="price">金额：￥<i style="font-size: 14px;">{{order.goodsprice}}</i></div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <div class="coupon">退款金额：<span class="price">￥<i>{{order.goodsprice}}</i></span></div>
+    </div>
+    <!--退款原因-->
+    <div class="re-message">
+        <textarea name="returndemo" id="returndemo" rows="4" cols="" class="txt" placeholder="请填写退款原因"></textarea>
+    </div>
+</div>
+<!--底部-->
+<footer class="re-footer" onclick="confirm()">
+    提交
+</footer>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="https://cdn.bootcss.com/layer/3.0.3/mobile/layer.min.js"></script>
+<script type="text/javascript">
+    function confirm(){
+        layer.open({
+            content: '您确定要退款？'
+            ,btn: ['确定', '取消']
+            ,yes: function(index){
+                refund();
+                layer.close(index);
+            }
+        });
+    }
+    function refund()
+    {
+        var returndemo = $('#returndemo').val();
+        if (returndemo == ''){
+            mask('请填写退款原因');
+            return false;
+        }
+        $.ajax({
+            type:'post',
+            url:'/my/refundSave',
+            data:'id={{order.id}}&returndemo='+returndemo,
+            error:function(){
+                mask('error');
+            },
+            success:function(res){
+                if (res == 'success') {
+                    mask('提交成功!');
+                    setTimeout(function () {
+                        location.href = '/my/order';
+                    }, 1000);
+                } else {
+
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends '/layout_index.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title">{{pagetitle}}</h1>
+</header>
+
+<div class="ch-container">
+    <div class="ch-filter-wrap ch-filter-other">
+        <a class="item j-all" href="javascript:;">
+            <span>{{catename}} </span>
+            <i class="ch-arrow"></i>
+        </a>
+        <a class="item j-price" href="/index/new?cateid={{cateid}}&rush={{rush}}&hot={{hot}}&sales={{sales}}&price=1&keyword={{keyword}}" data="0">
+            <span>价格 </span>
+            <i class="ch-sort"></i>
+        </a>
+        <a class="item" href="/index/new?cateid={{cateid}}&rush={{rush}}&hot={{hot}}&sales=1&price={{price}}&keyword={{keyword}}">
+            <span>销量 </span>
+        </a>
+        <a class="item" href="/index/new?rush={{rush}}&hot=1&sales={{sales}}&cateid={{cateid}}&price={{price}}&keyword={{keyword}}">
+            <span>人气 </span>
+        </a>
+        <a class="item j-pt" href="javascript:;">
+            <span>{{rush_text}} </span>
+            <i class="ch-arrow"></i>
+        </a>
+    </div>
+
+    <!-- 全部弹框 -->
+    <div class="ch-modal j-price-modal">
+        <div class="ch-content j-all-content">
+            <div class="ch-all"><span class="item"><a href="/index/new?rush={{rush}}">全部</a></span></div>
+            <div class="ch-all-list">
+                {% for item in catelist %}
+                <a class="item" href="/index/new?cateid={{item.id}}&rush={{rush}}">{{item.name}}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 参团弹框 -->
+    <div class="ch-modal j-pt-modal">
+        <div class="ch-content j-all-content">
+            <ul class="ch-select-list">
+                <li onclick="location.href='/index/new?cateid={{cateid}}&rush=1&hot={{hot}}&sales={{sales}}&price={{price}}&keyword={{keyword}}'">参团</li>
+                <li onclick="location.href='/index/new?cateid={{cateid}}&rush=2&hot={{hot}}&sales={{sales}}&price={{price}}&keyword={{keyword}}'">不参团</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="ch-recommend-wrap">
+        <ul class="ch-recommend-list am-padding-top-sm">
+
+
+        </ul>
+    </div>
+
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/swiper.min.js"></script>
+<script type="text/javascript" src="/assets/dropload/dropload.min.js"></script>
+<script type="text/javascript" src="/assets/layer_mobile/layer.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // 页数
+        var page = 0;
+        // dropload
+        $('.content').dropload({
+            scrollArea: window,
+            loadDownFn: function (me) {
+
+                // 拼接HTML
+                var result = '';
+                $.ajax({
+                    type: 'GET',
+                    url: '/index/newJson?page=' + page + '&cateid={{cateid}}&rush={{rush}}&hot={{hot}}&sales={{sales}}&price={{price}}&keyword={{keyword}}',
+                    dataType: 'json',
+                    success: function (data) {
+                        var arrLen = data.length;
+                        if (arrLen > 0) {
+                            for (var i = 0; i < arrLen; i++) {
+                                var pintuan = '';
+                                if(data[i].rush > 0) {
+                                    pintuan = '<div class="ch-tg"><span class="ch-tg-price">￥'+data[i].rushprice+'</span></div>';
+                                }
+                                // HTML主体
+                                result += '<li>' +
+                                        '<a class="block" href="/index/goods?id='+data[i].id+'">' +
+                                        '<div class="img-wrap">' +
+                                        '<img src="'+data[i].imgurl+'">' +
+                                        pintuan +
+                                        '</div>' +
+                                        '<h4 class="ch-title two-truncate">'+data[i].name+'</h4>' +
+                                        '<div class="ch-price">￥'+data[i].price+' <span class="ch-icon-sort">'+data[i].secondtype+'</span></div>' +
+                                        '</a>' +
+                                        '</li>';
+                            }
+                            // 如果没有数据
+                        } else {
+                            // 锁定
+                            me.lock();
+                            // 无数据
+                            me.noData();
+                        }
+                        // 为了测试，延迟1秒加载
+                        setTimeout(function () {
+                            // 插入数据到页面，放到最后面
+                            $('.ch-recommend-list').append(result);
+                            // 每次数据插入，必须重置
+                            me.resetload();
+                        }, 100);
+                    },
+                    error: function (xhr, type) {
+                        alert('Ajax error!');
+                        // 即使加载出错，也得重置
+                        me.resetload();
+                    }
+                });
+                page++;
+            }
+        });
+    });
+</script>
+<script>
+    $(function () {
+        // nav 点击高亮当前点击对象
+        $('.ch-filter-wrap .item').on('click', function () {
+            $('.ch-filter-wrap .item').removeClass('active');
+            $(this).addClass('active');
+            $('.ch-modal').hide();
+            $('.j-price').attr('data', 0);
+        });
+
+        // 点击全部
+        $('.j-all').on('click', function () {
+            $('.j-price-modal').show();
+        });
+
+        // 点击全部弹框里的内容
+        $('.j-all-content .item').on('click', function () {
+            var text = $(this).html();
+            $('.j-all').find('span').html(text);
+        });
+
+        // 点击内容其他区域，关闭弹窗
+        $('.ch-modal').not('.ch-content').on('click', function () {
+            $(this).hide();
+            $('.ch-filter-wrap .item').removeClass('active');
+        });
+
+        // 点击价格
+        $('.j-price').on('click', function () {
+            var data = parseInt($(this).attr('data'));
+            if (data == 0) {
+                $(this).find('.ch-sort').addClass('asc').removeClass('desc');
+                $(this).attr('data', 1);
+            } else {
+                $(this).find('.ch-sort').addClass('desc').removeClass('asc');
+                $(this).attr('data', 0);
+            }
+        });
+
+        // 点击参团
+        $('.j-pt').on('click', function () {
+            $('.j-pt-modal').show();
+        });
+
+        // 点击参团弹框选择内容
+        $('.ch-select-list li').on('click', function () {
+            var text = $(this).html();
+            $('.j-pt').find('span').html(text);
+        });
+
+    });
+</script>
+{% endblock %}

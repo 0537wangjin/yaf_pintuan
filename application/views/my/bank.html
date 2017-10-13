@@ -1,0 +1,79 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        编辑银行卡
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:save()" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right">保存</i>
+        </a>
+    </div>
+</header>
+<input type="hidden" class="txt" id="bank" name="bank" value="{{user_bank}}"/>
+<div class="eb-container">
+    <ul class="bank-list">
+        <li class="list-item"><a href="/my/bankchoose">
+            {% if user_bank is empty %}<span>选择银行</span>{% else %}<span>{{user_bank}}</span>{% endif %}<span
+                class="txt"></span></a><i
+                class="arrow-right"></i></li>
+        <li class="list-item"><span>户主姓名</span><input type="text" class="txt" value="{{user_bankuser}}" id="bankuser" name="bankuser"/><i
+                class="arrow-right"></i></li>
+        <li class="list-item"><span>银行卡号</span><input type="text" class="txt" value="{{user_bankcard}}" id="bankcard" name="bankcard"/><i
+                class="arrow-right"></i></li>
+        <li class="list-item"><span>开户行名称</span><input type="text" class="txt" value="{{user_bankname}}" id="bankname" name="bankname"/><i
+                class="arrow-right"></i></li>
+    </ul>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function save() {
+        var bank = $('#bank').val();
+        var bankname = $('#bankname').val();
+        var bankcard = $('#bankcard').val();
+        var bankuser = $('#bankuser').val();
+        if (bank == '') {
+            mask('请先选择银行!');
+            return;
+        }
+        if (bankuser == '') {
+            mask('请输入户主姓名!');
+            return;
+        }
+        if (bankcard == '') {
+            mask('请输入银行卡号!');
+            return;
+        }
+
+        if (bankname == '') {
+            mask('请输入开户行名称!');
+            return;
+        }
+
+        $.ajax({
+            type: 'post',
+            url: '/my/bankSave',
+            data: 'bankname=' + bankname + '&bankcard=' + bankcard + '&bankuser=' + bankuser,
+            error: function () {
+                mask('error');
+            },
+            success: function (res) {
+                if (res == 'success') {
+                    mask('保存成功!');
+                    setTimeout(function () {
+                        location.href = '/my/takebank';
+                    }, 1000)
+                } else {
+                    mask(res);
+                }
+            }
+        });
+    }
+</script>
+{% endblock%}

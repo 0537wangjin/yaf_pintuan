@@ -1,0 +1,178 @@
+{% extends '/layout.php' %}
+{% block content %}
+<form method="post" action="/my/evaluateSave">
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        评价
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:evaluate()" class="">
+            <i class="tt-right">提交</i>
+        </a>
+    </div>
+</header>
+<!--详情-->
+<div class="iod-container">
+    <div class="content">
+        <!--商品详情-->
+        <ul class="order-list">
+            <li class="list-item">
+                <div class="center">
+                    <div class="img"><img src="{{info.imgurl}}"/></div>
+                    <div class="content">
+                        <p class="name">{{info.name}}</p>
+                        <div class="infor am-cf">
+                            <div class="integral am-fl">￥<i>{{info.goodsprice}}</i></div>
+                            <div class="num am-fr">数量：<i>{{info.buycount}}</i></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom am-cf bottom-details">
+                    <div class="left am-fl">
+                        <div class="num">共<i>{{info.buycount}}</i>件商品</div>
+                        <div class="price">金额：￥<i style="font-size: 14px;">{{info.price}}</i></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--评价信息-->
+    <div class="wfe-evaluate">
+        <div class="top">
+            <span class="title">满意度：</span>
+            <div class="star-box clearfix">
+                <span class="active"></span>
+                <span class="active"></span>
+                <span class="active"></span>
+                <span class="active"></span>
+                <span class="active"></span>
+            </div>
+        </div>
+        <div class="message">
+            <textarea id="remark" name="remark" rows="5" cols="" class="word" placeholder="文字描述限制200字"></textarea>
+        </div>
+        <div class="upload-wrap">
+            <!--<div>添加图片（限4张）</div>-->
+            <ul class="upload am-cf am-gallery" data-am-widget="gallery" data-am-gallery="{ pureview: true }">
+                <li class="upload-btn">
+                    <img src="/assets/img/add.png">
+                    <input type="file" class="j-file-cert" name="temp_file"/>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+<input type="hidden" id="goodsid" name="goodsid" value="{{info.goodsid}}">
+<input type="hidden" id="orderid" name="orderid" value="{{info.orderid}}">
+<input type="hidden" id="stars" name="stars" value="5">
+<input type="hidden" id="pic1" name="pic1" value="">
+<input type="hidden" id="pic2" name="pic2" value="">
+<input type="hidden" id="pic3" name="pic3" value="">
+<input type="hidden" id="pic4" name="pic4" value="">
+</form>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/assets/js/swiper.min.js"></script>
+<script>
+    $('body').height($(window).height());
+    var num = finalnum = tempnum = 0;
+    var lis = $(".star-box span");
+    //num:传入点亮星星的个数
+    //finalnum:最终点亮星星的个数
+    //tempnum:一个中间值
+    function fnShow(num) {
+        finalnum = num || tempnum; //如果传入的num为0，则finalnum取tempnum的值
+        for (var i = 0; i < lis.length; i++) {
+            lis[i].className = i < finalnum ? "active" : ""; //点亮星星就是加class为light的样式
+        }
+    }
+    for (var i = 1; i <= lis.length; i++) {
+        lis[i - 1].index = i;
+        lis[i - 1].onmouseover = function () { //鼠标经过点亮星星。
+            fnShow(this.index); //传入的值为正，就是finalnum
+        }
+        lis[i - 1].onmouseout = function () { //鼠标离开时星星变暗
+            fnShow(0); //传入值为0，finalnum为tempnum,初始为0
+        }
+        lis[i - 1].onclick = function () { //鼠标点击,同时会调用onmouseout,改变tempnum值点亮星星
+            tempnum = this.index;
+            $('#stars').val(tempnum);
+            console.log(tempnum)
+        }
+    }
+
+    uploadImg();
+    function uploadImg() {
+        var count = 0;
+        $('.j-file-cert').on('change', function (e) {
+            count++;
+            if (count < 5) {
+                var that = $(this);
+                if (!window.FileReader) return;
+
+                e.stopPropagation();
+                e.preventDefault();
+
+                var file = e.target.files[0];
+                var content = '';
+
+                if (!file.type.match('image.*')) {
+                    alert('文件' + f.name + '不是图片')
+                    return;
+                }
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#pic' + count).val(e.target.result);
+                    content = '<li>' +
+                            '<img class="j-image" src="' + e.target.result + '">' +
+                            '<i class="icon-close"></i>' +
+                            '</li>'
+
+                    that.parent().before(content);
+                    //	删除上传图片
+                    $('.upload').on('click', '.icon-close', function () {
+                        $(this).parent().remove();
+                        var tue = $(this).siblings().attr('src');
+                        if (count > 0) {
+                            count--;
+                        }
+                    });
+
+                }
+                reader.readAsDataURL(file);
+            } else {
+                mask('最多传4张图片');
+                count = 4;
+                return false;
+            }
+
+        });
+    }
+    ;
+    function evaluate() {
+        $('#pic1').val('');
+        $('#pic2').val('');
+        $('#pic3').val('');
+        $('#pic4').val('');
+        if($('#remark').val() == ''){
+            mask('请输入文字描述!');
+            return false;
+        }
+        var m = 1;
+        $(".j-image").each(function(){
+            $('#pic'+m).val($(this).attr('src'));
+            m++;
+        });
+        document.forms[0].submit();return false;
+    }
+</script>
+{% endblock %}

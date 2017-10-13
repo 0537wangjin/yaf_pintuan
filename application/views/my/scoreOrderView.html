@@ -1,0 +1,100 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        订单详情
+    </h1>
+</header>
+<!--详情-->
+<div class="iod-container">
+    <div class="status"><img src="../assets/img/tt-dbg.png" alt=""/><span>{{goods.status_text}}</span></div>
+    <div class="content">
+        <!--商品详情-->
+        <ul class="order-list">
+            <li class="list-item">
+                <a href="javascript:;" class="href-item">
+                    <div class="center">
+                        <div class="img"><img src="{{goods.imgurl}}"/></div>
+                        <div class="content">
+                            <p class="name">{{goods.goodsname}}</p>
+                            <div class="infor am-cf">
+                                <div class="integral am-fl"><i>{{goods.money}}</i>积分</div>
+                                <div class="num am-fr">数量：<i>{{goods.buycount}}</i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottom am-cf">
+                        <div class="left am-fl">
+                            <div class="num">共<i>{{goods.buycount}}</i>件商品</div>
+                            <div class="price">金额：<i style="font-size: 14px;">{{goods.money}}积分</i></div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!--收货信息-->
+    <div class="information">
+        <div class="content">
+            <div class="name">
+                <span class="left">收货人</span>
+                <span class="infor">{{address.username}} <i></i>{{address.tel}}</span>
+            </div>
+            <div class="addr">
+                <span class="left">收货地址</span>
+                <span class="infor">{{address.province}}{{address.city}}{{address.area}}{{address.address}}</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="number">
+                <span class="left">订单编号</span>
+                <span class="infor">{{goods.transid}}</span>
+            </div>
+            <div class="time">
+                <span class="left">下单时间</span>
+                <span class="infor">{{goods.regdate}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!--底部-->
+{% if goods.status > 2 %}
+<footer class="iod-foot am-cf">
+    <a href="javascript:confirmDel();" class="btn am-fr gray">删除订单</a>
+    <a href="https://m.kuaidi100.com/result.jsp?com={{order.deliveryname}}&nu={{order.deliverynum}}"
+       class="btn am-fr red">查看物流</a>
+</footer>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script type="application/javascript" src="/assets/layer_mobile/layer.js"></script>
+<script type="text/javascript">
+    function confirmDel() {
+        layer.open({
+            content: '您确定要删除吗？'
+            , btn: ['确定', '取消']
+            , yes: function (index) {
+                orderDel();
+                layer.close(index);
+            }
+        });
+    }
+    function orderDel() {
+        $.get('/my/scoreOrderDel?id={{goods.id}}', function (res) {
+            if (res == 'success') {
+                mask('删除成功!');
+                setTimeout(function () {
+                    location.href = '/my/scoreOrder';
+                }, 1000);
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock %}

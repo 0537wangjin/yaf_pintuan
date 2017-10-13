@@ -1,0 +1,223 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<div class="my-header-details">
+    <span class="icon-return" onclick="history.go(-1)"></span>
+</div>
+<div class="container" style="padding-bottom: 60px;">
+    <div class="common-goods-wrap">
+        <div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider='{&quot;directionNav&quot;:false}'>
+            <ul class="am-slides">
+                {% for item in photo %}
+                <li>
+                    <img src="{{item.imgurl}}"/>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="goods-name-wrap">
+            <h3>{{goods.name}}</h3>
+            <h4>￥{{goods.price}}<span>{{goods.secondtype}}</span></h4>
+            <h5>库存 {{goods.stock}} 销量 {{goods.realsale}}</h5>
+        </div>
+        <div class="goods-details-wrap">
+            <h3>商品详情</h3>
+            {% autoescape false %}
+            {{goods.content}}
+            {% endautoescape %}
+        </div>
+        <div class="details-evaluation-wrap">
+            <div class="details-evaluation-top">
+                评价({{ reply_count }})
+                <div class="am-fr text-y">
+                    好评
+                    {% if reply_avg == '1' %}
+                    <span class="star"><i class="icon-star active"></i><i class="icon-star"></i><i
+                            class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                    {% endif %}
+                    {% if reply_avg == '2' %}
+                    <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                    {% endif %}
+                    {% if reply_avg == '3' %}
+                    <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star active"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                    {% endif %}
+                    {% if reply_avg == '4' %}
+                    <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star"></i></span>
+                    {% endif %}
+                    {% if reply_avg == '5' %}
+                    <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star active"></i><i class="icon-star active"></i><i
+                            class="icon-star active"></i></span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="all-evaluation-list">
+                {% for item in reply %}
+                <div class="evaluation">
+                    <h3 class="am-cf">
+                        <img src="{{item.avatar}}"/>
+                        {{item.username}}
+                        {% if item.stars == '1' %}
+                        <span class="star"><i class="icon-star active"></i><i class="icon-star"></i><i
+                                class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                        {% endif %}
+                        {% if item.stars == '2' %}
+                        <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                        {% endif %}
+                        {% if item.stars == '3' %}
+                        <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star active"></i><i class="icon-star"></i><i class="icon-star"></i></span>
+                        {% endif %}
+                        {% if item.stars == '4' %}
+                        <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star"></i></span>
+                        {% endif %}
+                        {% if item.stars == '5' %}
+                        <span class="star"><i class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star active"></i><i class="icon-star active"></i><i
+                                class="icon-star active"></i></span>
+                        {% endif %}
+                    </h3>
+                    <h4 class="text-y" style="padding-bottom: 10px;">{{item.regdate}}</h4>
+                    <p>{{item.remark}}</p>
+                    {% if item.imga is not empty %}
+                    <div class="evaluation-img am-cf">
+                        <ul data-am-widget="gallery"
+                            class="am-gallery am-avg-sm-2am-avg-md-3 am-avg-lg-4 am-gallery-overlay"
+                            data-am-gallery="{ pureview: true }">
+                            <li>
+                                <div class="am-gallery-item">
+                                    <a href="#">
+                                        <img src="{{item.imga}}"/>
+                                    </a>
+                                </div>
+                            </li>
+                            {% if item.imgb is not empty %}
+                            <li>
+                                <div class="am-gallery-item">
+                                    <a href="#">
+                                        <img src="{{item.imgb}}"/>
+                                    </a>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% if item.imgc is not empty %}
+                            <li>
+                                <div class="am-gallery-item">
+                                    <a href="#">
+                                        <img src="{{item.imgc}}"/>
+                                    </a>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% if item.imgd is not empty %}
+                            <li>
+                                <div class="am-gallery-item">
+                                    <a href="#">
+                                        <img src="{{item.imgd}}"/>
+                                    </a>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% if item.imge is not empty %}
+                            <li>
+                                <div class="am-gallery-item">
+                                    <a href="#">
+                                        <img src="{{item.imge}}"/>
+                                    </a>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="details-evaluation-btm">
+                <a href="/index/evaluateList?id={{goods.id}}">
+                    <button>查看所有评论</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--底部导航-->
+<div class="am-cf my-navbar details-navbar">
+    <ul class="am-cf am-avg-sm-3" style="width: 66%;">
+        <li>
+            {% if fav > 0 %}
+            <a href="#" id="collection" index=1 title="{{goods.id}}">
+                <em class="icon-collection active"></em>
+                <span>收藏</span>
+            </a>
+            {% else %}
+            <a href="#" id="collection" index=0 title="{{goods.id}}">
+                <em class="icon-collection"></em>
+                <span>收藏</span>
+            </a>
+            {% endif %}
+        </li>
+        <li>
+            <a href="javascript:addcart()">
+                <img src="/assets/img/zb__26.png"/>
+                <span>加入购物车</span>
+            </a>
+        </li>
+    </ul>
+    <a href="#" class="buy-now" id="popup-btn">
+        立即购买
+    </a>
+</div>
+
+<!--底部弹出-->
+<div class="popup-btm">
+    <div class="popup-infor">
+        <span class="icon-x"></span>
+        <img src="/assets/img/zb_1.png"/>
+        <p>￥{{goods.price}}</p>
+    </div>
+    <div class="confirm-order-btm">
+        购买数量:
+        <div class="goods-number">
+            <span class="icon-jian"></span>
+            <b>1</b>
+            <span class="icon-jia"></span>
+        </div>
+    </div>
+    <button id="make-sure">确定</button>
+</div>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/assets/js/zb_wsc.js"></script>
+<script type="text/javascript">
+    function addcart() {
+        $.get('/index/cartAdd?goodsid={{goods.id}}', function (res) {
+            if (res == 'success') {
+                mask('添加成功', ' ');
+            } else {
+                mask(res, ' ');
+            }
+        });
+    }
+    function cartconfirm() {
+        $.get('/index/cartAdd?goodsid={{goods.id}}&num=' + $('.goods-number b').html(), function (res) {
+            if (res == 'success') {
+                location.href='/cart/confirm?goods={{goods.id}}';
+            } else {
+                mask(res, ' ');
+            }
+        });
+    }
+</script>
+{% endblock %}

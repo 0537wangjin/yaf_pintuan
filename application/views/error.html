@@ -1,0 +1,39 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+<div class="am-header-left am-header-nav">
+<a href="{{backurl}}" class="">
+<i class="arrow-left"></i>
+</a>
+</div>
+<h1 class="am-header-title tt-title">
+提示
+</h1>
+<div class="am-header-right am-header-nav">
+<a href="javascript:;" class="">
+<i class="tt-right"></i>
+</a>
+</div>
+</header>
+<div class="about-container">
+<div class="content">
+{% if success > 0 %}
+    <p style="text-align: center; padding: 30px 0 10px;"><img src="/assets/img/ok.png" style="width: 30%;"/></p>
+{% else %}
+    <p style="text-align: center; padding: 30px 0 30px;"><img src="/assets/img/warning.png" style="width: 30%;"/></p>
+{% endif %}
+    <h2 style="font-size: 24px; text-align: center">{{tips}}</h2>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</div>
+</div>
+
+{% endblock %}

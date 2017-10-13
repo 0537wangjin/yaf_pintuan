@@ -1,0 +1,43 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<header class="my-header-wrap">
+    <a class="icon-back" href="javascript:history.go(-1)"></a>
+    <h1>{{pagetitle}}</h1>
+</header>
+<div class="container">
+    <div class="coupon-wrap">
+        {% for item in list %}
+        <div class="coupon">
+            <h3>
+                {% if item.keytype=='1' %}
+                全平台可用
+                {% endif %}
+                {% if item.keytype=='2' %}
+                某分类
+                {% endif %}
+                {% if item.keytype=='3' %}
+                某商品
+                {% endif %}
+            </h3>
+            <p>满{{item.minprice}}可用</p>
+            <time>有效期至{{item.endtime}}</time>
+            <b>{{item.price}}</b>
+            <button onclick="getCoupon({{item.id}})">领取</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function getCoupon(id)
+    {
+        $.get('/index/couponGet?id=' + id, function (res) {
+            mask(res, ' ');
+        });
+    }
+</script>
+{% endblock %}

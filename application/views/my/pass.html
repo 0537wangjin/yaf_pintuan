@@ -1,0 +1,52 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/set" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        设置支付密码
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:;" class="">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="wc-container">
+    <ul class="wc-list">
+        <li class="list-item"><input type="password" id="pass" placeholder="输入密码"/></li>
+        <li class="list-item"><input type="password" id="repass" placeholder="再次输入密码"/></li>
+    </ul>
+    <div class="submit" onclick="save()">确定</div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="/assets/js/common.js"></script>
+<script>
+    function save() {
+        var pass = $('#pass').val();
+        var repass = $('#repass').val();
+        if (pass == '') {
+            mask('请输入密码!');
+            return;
+        }
+        if (repass == '') {
+            mask('请再次输入密码!');
+            return;
+        }
+        $.get('/my/passSave?keytype=2&pass=' + pass + "&repass=" + repass, function (res) {
+            if (res == 'success') {
+                mask('修改成功!');
+                setTimeout(function () {
+                    location.href = '/my/set';
+                }, 1000)
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock%}

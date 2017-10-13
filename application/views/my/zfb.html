@@ -1,0 +1,46 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/takezfb" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        {{pagetitle}}
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:save();" class="">
+            <i class="tt-right">完成</i>
+        </a>
+    </div>
+</header>
+<div class="wc-container">
+    <ul class="wc-list">
+        <li class="list-item"><input name="alipay" id="alipay" type="text" placeholder="输入支付宝账号" value="{{user_alipayname}}"/></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    function save()
+    {
+        var alipay = $('#alipay').val();
+        if(alipay==''){
+            mask('请输入支付宝账号!');
+            return;
+        }
+        $.get('/my/zfbSave?alipay='+ alipay, function(res){
+            if(res=='success'){
+                mask('保存成功!');
+                setTimeout(function(){
+                    location.href = '/my/takezfb';
+                }, 1000)
+            }else{
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock%}

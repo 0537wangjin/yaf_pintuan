@@ -1,0 +1,208 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/dropload/dropload.css"/>
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        我的订单
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="order-nav">
+    <ul class="nav-list">
+        <li class="list-item {% if status == 0 %}active{% endif %}">
+            <a href="/my/order?status=">全部</a>
+        </li>
+        <li class="list-item {% if status == 1 %}active{% endif %}">
+            <a href="/my/order?status=1">待付款</a>
+        </li>
+        <li class="list-item {% if status == 2 %}active{% endif %}">
+            <a href="/my/order?status=2">待发货</a>
+        </li>
+        <li class="list-item {% if status == 3 %}active{% endif %}">
+            <a href="/my/order?status=3">待收货</a>
+        </li>
+        <li class="list-item {% if status == 4 %}active{% endif %}">
+            <a href="/my/order?status=4">待评价</a>
+        </li>
+        <li class="list-item {% if status == 100 %}active{% endif %}">
+            <a href="/my/order?status=100">退款/售后</a>
+        </li>
+    </ul>
+</div>
+<!--订单列表-->
+<div class="mo-order">
+    <ul class="order-list">
+
+    </ul>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/assets/dropload/dropload.min.js"></script>
+<script type="text/javascript" src="/assets/layer_mobile/layer.js"></script>
+<script type="text/javascript">
+    $(function(){
+        // 页数
+        var page = 0;
+        // dropload
+        $('.content').dropload({
+            scrollArea : window,
+            loadDownFn : function(me){
+
+                // 拼接HTML
+                var result = '';
+                $.ajax({
+                    type: 'GET',
+                    url: '/my/orderJson?page='+page+'&status={{status}}',
+                    dataType: 'json',
+                    success: function(data){
+                        var arrLen = data.length;
+                        if(arrLen > 0){
+                            for(var i=0; i<arrLen; i++){
+                                // 订单商品
+                                var goodshtml = '';
+                                for(var k = 0; k<data[i].item.length;k++){
+                                    goodshtml += '<div class="center" onclick="location.href=\'/my/orderView?id='+data[i].id+'\'">' +
+                                            '<div class="img"><img src="'+data[i].item[k].imgurl+'"></div>' +
+                                            '<div class="content">' +
+                                            '<p class="name">'+data[i].item[k].name+'</p>' +
+                                            '<div class="infor am-cf">' +
+                                            '<div class="integral am-fl">￥<i>'+data[i].item[k].goodsprice+'</i></div>' +
+                                            '<div class="num am-fr">数量：<i>'+data[i].item[k].buycount+'</i></div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>';
+                                }
+                                // 支付按钮
+                                var btnhtml = '';
+                                if(data[i].status == '1'){
+                                    btnhtml = '<span class="btn del-order" onclick="confirmCancel('+data[i].id+')">取消订单</span>&nbsp;<span class="btn" onclick="location.href=\'/cart/payment?transid='+data[i].transid+'\'">去支付</span>';//待支付
+                                } else if(data[i].status == '2'){
+                                    btnhtml = '<span class="btn am-fr gray" onclick="location.href=\'/my/refund?id='+data[i].id+'\'">退款/售后</span>';//待发货
+                                } else if(data[i].status == '3'){
+                                    btnhtml = '<span class="btn" onclick="orderReceipt('+data[i].id+')">确认收货</span>';//待收货
+                                } else if(data[i].status == '4'){
+                                    btnhtml = '<span class="btn" onclick="location.href=\'/my/orderView?id='+data[i].id+'\'">去评价</span>';//待评价
+                                } else if(data[i].status == '5'){
+                                    btnhtml = '<span class="btn am-fr gray" onclick="confirmDel('+data[i].id+')">删除订单</span>';//已完成
+                                }
+                                // HTML主体
+                                result += '<li class="list-item">' +
+                                        '<a class="href-item">' +
+                                        '<div class="top">' +
+                                        '<div class="order-number">订单号：<span>'+data[i].transid+'</span></div>' +
+                                        '<div class="status">'+data[i].flag+'</div>' +
+                                        '</div>' +
+                                        goodshtml+
+                                        '<div class="bottom am-cf">' +
+                                        '<div class="left am-fl">' +
+                                        '<div class="num">共<i>'+data[i].item_count+'</i>件商品</div>' +
+                                        '<div class="price">金额：￥<i style="font-size: 14px;">'+data[i].goodsprice+'</i></div>' +
+                                        '</div>' +
+                                        '<div class="right am-fr">' +
+                                        btnhtml +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</a>' +
+                                        '</li>';
+                            }
+                            // 如果没有数据
+                        }else{
+                            // 锁定
+                            me.lock();
+                            // 无数据
+                            me.noData();
+                        }
+                        // 为了测试，延迟1秒加载
+                        setTimeout(function(){
+                            // 插入数据到页面，放到最后面
+                            $('.order-list').append(result);
+                            // 每次数据插入，必须重置
+                            me.resetload();
+                        },500);
+                    },
+                    error: function(xhr, type){
+                        alert('Ajax error!');
+                        // 即使加载出错，也得重置
+                        me.resetload();
+                    }
+                });
+                page++;
+            }
+        });
+    });
+    function confirmCancel(id) {
+        layer.open({
+            content: '您确定要取消吗？'
+            , btn: ['确定', '取消']
+            , yes: function (index) {
+                cancel(id);
+                layer.close(index);
+            }
+        });
+    }
+    function cancel(id) {
+        $.ajax({
+            type: 'get',
+            url: '/my/orderCancel',
+            data: 'id='+id,
+            error: function () {
+                mask('error');
+            },
+            success: function (res) {
+                if (res == 'success') {
+                    mask('订单已关闭!');
+                    setTimeout(function () {
+                        location.href = '/my/order';
+                    }, 1000);
+                } else {
+
+                }
+            }
+        });
+    }
+
+    function confirmDel(id) {
+        layer.open({
+            content: '您确定要删除吗？'
+            , btn: ['确定', '取消']
+            , yes: function (index) {
+                orderDel(id);
+                layer.close(index);
+            }
+        });
+    }
+    function orderDel(id) {
+        $.get('/my/orderDel?id='+id, function (res) {
+            if (res == 'success') {
+                mask('删除成功!');
+                setTimeout(function () {
+                    location.href = '/my/order';
+                }, 1000);
+            } else {
+                mask(res);
+            }
+        });
+    }
+    function orderReceipt(id) {
+        $.get('/my/orderReceipt?id='+id, function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+                setTimeout(function () {
+                    location.href = '/my/order?status=4';
+                }, 1000);
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock %}

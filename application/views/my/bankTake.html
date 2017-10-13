@@ -1,0 +1,72 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/account" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        银行卡提现
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:;" class="">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="wc-container">
+    <ul class="wc-list">
+        <li class="list-item" onclick="location.href='/my/bank'"><span class="left">提现银行</span><i class="arrow-right"></i>
+            <!--选择完银行信息-->
+            <input type="hidden" name="bank" id="bank" value="{{user_bankuser}}"/>
+            {% if user_bankuser is not empty %}
+            <div class="name">{{user_bankuser}}</div>
+            <div class="number">{{user_bankcard}}</div>
+            {% endif %}
+        </li>
+        <li class="list-item"><span class="left">当前钱包余额</span><span class="price">￥{{user_feeaccount}}</span></li>
+        <li class="list-item"><input type="text" id="money" name="money" placeholder="输入提现金额"/></li>
+        <li class="list-item"><input type="password" id="pass" name="pass" placeholder="输入支付密码"/></li>
+    </ul>
+    <p class="note">注：金额必须为100的整数倍</p>
+    <a href="javascript:save();" class="submit">提交申请</a>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    function save() {
+        var bank = $('#bank').val();
+        var money = $('#money').val();
+        var pass = $('#pass').val();
+        if (bank == '') {
+            mask('请先完善银行卡信息!');
+            return;
+        }
+        if (money == '') {
+            mask('请输入提现金额!');
+            return;
+        }
+        if (pass == '') {
+            mask('请输入支付密码!');
+            return;
+        }
+        $.get('/my/takeSubmit?keytype=2&money=' + money + '&pass=' + pass, function (res) {
+            if (res == 'success') {
+                mask('提现成功!');
+                setTimeout(function () {
+                    location.href = '/my/account';
+                }, 1000)
+            } else if( res =='paypass') {
+                mask('请先设置支付密码!');
+                setTimeout(function () {
+                    location.href = '/my/pass';
+                }, 1000)
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock%}

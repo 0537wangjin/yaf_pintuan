@@ -1,0 +1,48 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/my" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        {{pagetitle}}
+    </h1>
+</header>
+<!--订单列表-->
+<div class="io-order">
+    <ul class="order-list">
+        {% for item in list %}
+        <li class="list-item">
+            <a href="/my/scoreOrderView?id={{item.id}}" class="href-item">
+                <div class="top">
+                    <div class="order-number">订单号：<span>{{item.transid}}</span></div>
+                    <div class="status">{{item.status_text}}</div>
+                </div>
+                <div class="center">
+                    <div class="img"><img src="{{item.imgurl}}"/></div>
+                    <div class="content">
+                        <p class="name">{{item.goodsname}}</p>
+                        <div class="infor am-cf">
+                            <div class="integral am-fl"><i>{{item.money}}</i>积分</div>
+                            <div class="num am-fr">数量：<i>{{item.buycount}}</i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom am-cf">
+                    <div class="left am-fl">
+                        <div class="num">共<i>{{item.buycount}}</i>件商品</div>
+                        <div class="price">金额：<i style="font-size: 14px;">{{item.money}}积分</i></div>
+                    </div>
+                    <div class="right am-fr">
+
+                    </div>
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+{% endblock %}

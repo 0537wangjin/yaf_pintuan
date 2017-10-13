@@ -1,0 +1,51 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+<div class="am-header-left am-header-nav">
+<a href="/my/my" class="">
+<i class="arrow-left"></i>
+</a>
+</div>
+<h1 class="am-header-title tt-title">
+设置
+</h1>
+<div class="am-header-right am-header-nav">
+<a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+<i class="tt-right"></i>
+</a>
+</div>
+</header>
+<div class="set-container">
+<ul class="bank-list">
+<li class="list-item"><a href="/my/pass" class="href-item"><span>设置支付密码</span></a><i class="arrow-right"></i></li>
+<li class="list-item"><a href="/my/feedback" class="href-item"><span>意见反馈</span></a><i class="arrow-right"></i></li>
+<li class="list-item"><a href="/my/aboutus" class="href-item"><span>关于我们</span></a><i class="arrow-right"></i></li>
+<li class="list-item"><a href="javascript:;" class="href-item" data-am-modal="{target: '#my-alert1'}"><span>联系客服</span><span class="number">{{ kefutel }}</span></a><i class="arrow-right"></i></li>
+</ul>
+<div class="out-log" data-am-modal="{target: '#my-alert'}">退出登录</div>
+</div>
+<!--退出登录-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+<div class="am-modal-dialog customer-service">
+<div class="am-modal-hd title" style="padding: 20px 0;">确定要退出登录吗</div>
+
+<div class="am-modal-footer">
+<span class="am-modal-btn del">取消</span>
+<span class="am-modal-btn confirm" onclick="location.href='/my/exit'">确定</span>
+</div>
+</div>
+</div>
+<!--联系客服-->
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert1">
+<div class="am-modal-dialog customer-service">
+<div class="am-modal-hd title">确定要拨打客服电话吗</div>
+<div class="am-modal-bd name">
+{{kefutel}}
+</div>
+<div class="am-modal-footer">
+<span class="am-modal-btn del">取消</span>
+<a href="tel://1541210000" class="phone">拨打</a>
+</div>
+</div>
+</div>
+{% endblock %}

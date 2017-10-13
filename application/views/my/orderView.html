@@ -1,0 +1,219 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        {{pagetitle}}
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<!--详情-->
+<div class="iod-container">
+    <div class="status"><img src="/assets/img/tt-dbg.png" alt=""/><span>{{order.flag}}</span></div>
+    <div class="content">
+        <!--商品详情-->
+        <ul class="order-list">
+            <li class="list-item">
+                <a class="href-item">
+                    {% for item in order.goodslist %}
+                    <div class="center">
+                        <div class="img"><img src="{{item.imgurl}}"/></div>
+                        <div class="content">
+                            <p class="name">{{item.name}}</p>
+                            <div class="infor am-cf">
+                                <div class="integral am-fl">￥<i>{{item.goodsprice}}</i></div>
+
+                                {% if order.goodslist_count > 1 %}
+                                {% if order.status == '4' %}
+                                {% if item.reply < 1 %}
+                                <a href="/my/evaluate?orderid={{order.id}}&goodsid={{item.goodsid}}" class="btn am-fr red">去评价</a>
+                                {% endif %}
+                                <div class="num am-fr">数量：<i>{{item.buycount}}</i></div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="bottom am-cf">
+                        <div class="left am-fl">
+                            <div class="num">共<i>{{order.item_count}}</i>件商品</div>
+                            <div class="price">金额：￥<i style="font-size: 14px;">{{order.goodsprice}}</i></div>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        {% if order.coupon.price is not empty %}
+        <div class="coupon">优惠券：<span class="price">{{order.coupon.price}}<i>元</i></span></div>
+        {% endif %}
+
+        {% if order.receipt > 0 %}
+        <div class="coupon">退款金额：<span class="price">￥<i>78.00</i></span></div>
+        <div class="re-time">退款时间：<span>2012-1-1  12:30</span></div>
+        {% endif %}
+
+    </div>
+    {% if order.receipt > 0 %}
+    <!--申请成功或审核中-->
+    <div class="re-reason">
+        <p class="gray">原因</p>
+        <p class="word">{{order.returndemo}}</p>
+    </div>
+    {% if order.demo is not empty %}
+    <!--审核失败-->
+    <div class="re-reason">
+        <p class="gray">商家反馈</p>
+        <p class="word">{{order.demo}}</p>
+    </div>
+    {% endif %}
+    {% else %}
+    <!--收货信息-->
+    <div class="information">
+        <div class="content">
+            <div class="name">
+                <span class="left">收货人</span>
+                <span class="infor">{{order.address.username}} <i></i>{{order.address.tel}}</span>
+            </div>
+            <div class="addr">
+                <span class="left">收货地址</span>
+                <span class="infor">{{order.address.province}}{{order.address.city}}{{order.address.area}}{{order.address.address}}</span>
+            </div>
+        </div>
+        <div class="content">
+            <div class="number">
+                <span class="left">订单编号</span>
+                <span class="infor">{{order.transid}}</span>
+            </div>
+            <div class="time">
+                <span class="left">下单时间</span>
+                <span class="infor">{{order.regdate}}</span>
+            </div>
+            <div class="pay">
+                <span class="left">支付方式</span>
+                <span class="infor">{{order.paytype_text}}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<!--底部-->
+<!--待发货-->
+{% if order.status == '2' %}
+<footer class="iod-foot am-cf">
+    <a href="/my/refund?id={{order.id}}" class="btn am-fr gray">退款/售后</a>
+</footer>
+{% endif %}
+<!--待付款-->
+{% if order.status == '1' %}
+<footer class="iod-foot am-cf">
+    <a href="javascript:;" class="btn am-fr red">去支付</a>
+    <a href="javascript:confirmCancel();" class="btn am-fr gray">取消订单</a>
+</footer>
+{% endif %}
+<!--待评价（订单中只有一种商品时出现当有多种商品时评价按钮在上面出现）-->
+{% if order.goodslist[1].goodsid is empty %}
+{% if order.status == '4' %}
+<footer class="iod-foot am-cf">
+    <a href="/my/evaluate?orderid={{order.id}}&goodsid={{order.goodslist[0].goodsid}}" class="btn am-fr red">去评价</a>
+</footer>
+{% endif %}
+{% endif %}
+<!--待收货-->
+{% if order.status == '3' %}
+<footer class="iod-foot am-cf">
+    <a href="javascript:orderReceipt();" class="btn am-fr red">确认收货</a>
+    <a href="/my/refund?id={{order.id}}" class="btn am-fr gray">退款/售后</a>
+    <a href="https://m.kuaidi100.com/result.jsp?com={{order.deliveryname}}&nu={{order.deliverynum}}"
+       class="btn am-fr gray">查看物流</a>
+</footer>
+{% endif %}
+<!--已取消-->
+{% if order.status == '8' %}
+<footer class="iod-foot am-cf">
+    <a href="javascript:confirmDel();" class="btn am-fr gray">删除订单</a>
+</footer>{% endif %}
+<!--已完成-->
+{% if order.status == '5' %}
+<footer class="iod-foot am-cf">
+    <a href="javascript:confirmDel();" class="btn am-fr gray">删除订单</a>
+</footer>{% endif %}
+{% endblock %}
+{% block script %}
+<script type="application/javascript" src="/assets/layer_mobile/layer.js"></script>
+<script type="text/javascript">
+
+    function confirmCancel() {
+        layer.open({
+            content: '您确定要取消吗？'
+            , btn: ['确定', '取消']
+            , yes: function (index) {
+                cancel();
+                layer.close(index);
+            }
+        });
+    }
+    function cancel() {
+        $.ajax({
+            type: 'get',
+            url: '/my/orderCancel',
+            data: 'id={{order.id}}',
+            error: function () {
+                mask('error');
+            },
+            success: function (res) {
+                if (res == 'success') {
+                    mask('订单已关闭!');
+                    setTimeout(function () {
+                        location.href = '/my/order';
+                    }, 1000);
+                } else {
+
+                }
+            }
+        });
+    }
+    function orderReceipt() {
+        $.get('/my/orderReceipt?id={{order.id}}', function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+                setTimeout(function () {
+                    location.href = '/my/order?status=4';
+                }, 1000);
+            } else {
+                mask(res);
+            }
+        });
+    }
+    function confirmDel() {
+        layer.open({
+            content: '您确定要删除吗？'
+            , btn: ['确定', '取消']
+            , yes: function (index) {
+                orderDel();
+                layer.close(index);
+            }
+        });
+    }
+    function orderDel() {
+        $.get('/my/orderDel?id={{order.id}}', function (res) {
+            if (res == 'success') {
+                mask('删除成功!');
+                setTimeout(function () {
+                    location.href = '/my/order';
+                }, 1000);
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock %}

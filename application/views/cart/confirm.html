@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{{pagetitle}}</title>
+    <link rel="stylesheet" href="/assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+    <link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+</head>
+<body>
+<header class="my-header-wrap">
+    <a class="icon-back" href="/cart"></a>
+    <h1>{{pagetitle}}</h1>
+</header>
+<div class="container">
+    <div class="confirm-order-wrap">
+        <div class="confirm-order-top" onclick="location.href='/my/address?keytype=1'">
+            <span class="icon-location"></span>
+            {% if address is empty %}
+            <h3>添加收货地址</h3>
+            {% else %}
+            <h3>{{address.username}} <b>{{address.tel}}</b></h3>
+            <p>{{address.province}}{{address.city}}{{address.area}}{{address.address}}</p>
+            {% endif %}
+            <span class="icon-right"></span>
+            <input type="hidden" name="addressid" id="addressid" value="{{address.id}}">
+        </div>
+        {% for item in list %}
+        <div class="confirm-order-md am-cf">
+            <div class="am-fl">
+                <img src="{{item.imgurl}}"/>
+            </div>
+            <div class="confirm-order-content">
+                <h3>{{item.name}}</h3>
+                <b>￥{{item.price}}</b><span>数量：{{item.buycount}}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if rush is empty %}
+        <div class="confirm-order-btm text-y" onclick="location.href='/cart/coupon'">
+            优惠券
+            {% if coupon is not empty %}
+            ({{coupon.price}})
+            {% endif %}
+            <span class="icon-right"></span>
+            <input type="hidden" name="couponid" id="couponid" value="{{coupon.id}}">
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% if rush is empty %}
+<div class="confirm-settlement">
+    <button onclick="location.href='/cart/order'">提交订单</button>
+    <em class="text-y">金额：<i>￥{{totalfee}}</i></em>
+</div>
+{% else %}
+<form method="get" action="/index/rushOrderSubmit">
+    <input type="hidden" name="address" value="{{address.id}}">
+    <input type="hidden" name="rushid" value="{{rushid}}">
+    <div class="confirm-settlement">
+        <button type="submit">提交订单</button>
+        <em class="text-y">金额：<i>￥{{totalfee}}</i></em>
+    </div>
+</form>
+{% endif %}
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script>
+</script>
+</body>
+</html>

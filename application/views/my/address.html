@@ -1,0 +1,122 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="{% if keytype == 1 %}/cart/confirm{% elseif keytype == 2 %}/index/gold{% else %}/my/my{% endif %}" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        收货地址
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+{% if list is empty %}
+<div class="da-container">
+    <!--无收货地址-->
+    <div class="content">
+        <img src="/assets/img/tt-address.png" width="62" height="62"/>
+        <p>无收货地址，快快添加地址吧</p>
+    </div>
+    <a href="/my/addressEdit?keytype={{keytype}}" class="added">新增地址</a>
+</div>
+{% else %}
+{% if keytype == 1 %}
+<div class="c-container">
+    <ul class="ca-add">
+        {% for item in list %}
+        <li class="ca-add-item" onclick="location.href='/cart/confirm?address={{item.id}}'">
+            <div class="c-i-top">
+                <p><span>收件人：    <i>{{item.username}}</i></span><span>电话：    <i>{{item.tel}}</i></span></p>
+                <p class="addr">{{item.city}}{{item.area}}{{item.address}}</p>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="/my/addressEdit?keytype={{keytype}}" class="added">新增地址</a>
+</div>
+{% else %}
+<div class="c-container">
+    <ul class="ca-add">
+        {% for item in list %}
+        <li class="ca-add-item">
+            <div class="c-i-top">
+                <p><span>收件人：    <i>{{item.username}}</i></span><span>电话：    <i>{{item.tel}}</i></span></p>
+                <p class="addr">{{item.city}}{{item.area}}{{item.address}}</p>
+            </div>
+            <div class="c-i-bom clearfix">
+                <span class="am-fl mr"><input onclick="setdefault('{{item.id}}')" type="radio" class="mt check"
+                                              name="default"
+                                              {% if item.rec> 0 %}checked="true"{% endif %}
+                />设为默认地址</span>
+                <div class="am-fr c-i-edit">
+                    <a href="javascript:;" class="delete" title="{{item.id}}">删除</a>
+                    <a href="/my/addressEdit?id={{item.id}}" class="edit">编辑</a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="/my/addressEdit" class="added">新增地址</a>
+</div>
+{% endif %}
+{% endif %}
+
+<!--清除弹出框-->
+<div class="am-modal am-modal-alert il-mask" tabindex="-1" id="my-alert">
+    <div class="am-modal-dialog">
+        <div class="am-modal-bd">
+            确定要删除该地址吗
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn gray">取消</span>
+            <span class="am-modal-btn red" data-am-modal-confirm id="del-all" onclick="del()">确定</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    var delid = 0;
+    $(function () {
+        $('.ca-add').find('.delete').on('click', function () {
+
+            delid = $(this).attr('title');
+
+            $('#my-alert').modal({
+                relatedTarget: this,
+                onConfirm: function (options) {
+                    $(this.relatedTarget).parents('.ca-add-item').remove();
+                },
+                closeOnConfirm: true,
+                onCancel: function () {
+                }
+            });
+        });
+    })
+    function del() {
+        $.get('/my/addressRemove?id=' + delid, function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+
+            } else {
+                mask(res);
+            }
+        });
+    }
+    function setdefault(id) {
+        $.get('/my/addressRec?id=' + id, function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+
+            } else {
+                mask(res);
+            }
+        });
+    }
+</script>
+{% endblock%}

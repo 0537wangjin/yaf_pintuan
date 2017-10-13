@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{{pagetitle}}</title>
+    <link rel="stylesheet" href="/assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+    <link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+</head>
+<body>
+<header class="my-header-wrap">
+    <a class="icon-back" href="javascript:history.go(-1)"></a>
+    <h1>支付</h1>
+</header>
+<div class="container">
+    <div class="payment-wrap">
+        <div class="payment-top">
+            <h3 class="text-y">需支付金额</h3>
+            <h4>￥ {{order.goodsprice}}</h4>
+            <p>余额支付 <b class="text-y">( 可用￥{{user.feeaccount}} )</b><span class="icon-check" index="1"></span></p>
+        </div>
+        <div class="payment-md">
+            <h3>选择支付方式</h3>
+            <p><img src="/assets/img/zb_13.png"/>微信客户端支付<span class="icon-check" index="2"></span></p>
+            <form>
+                <input type="password" placeholder="输入支付密码" name="paypass" id="paypass"/>
+            </form>
+        </div>
+        <div class="btn-wrap">
+            <button>确定支付</button>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/layer_mobile/layer.js"></script>
+<script type="text/javascript" src="/assets/js/zb_wsc.js"></script>
+<script>
+
+    $(function () {
+        //点击active效果
+        $('.icon-check').on("click", function () {
+            $('.icon-check').each(function () {
+                $(this).removeClass("active")
+            })
+            $(this).addClass("active");
+        })
+        //点击确定支付
+        $('.btn-wrap button').on('click', function () {
+            if ($('.active').length == 0) {
+                mask('请选择支付方式!', '');
+                return false;
+            }
+            var paypass = $('#paypass').val();
+            if (paypass == '') {
+                mask('请输入支付密码!', '');
+                return false;
+            }
+            if ($('.active').attr('index') == 1) {//余额
+                $.get('/cart/payConfirm?transid={{order.transid}}&paytype=1&paypass=' + paypass, function (res) {
+                    if (res == 'success') {
+                        mask('支付成功', '{{coins}}积分已发放至您的账户');
+                        setTimeout(function () {
+                            location.href = '/my/order';
+                        }, 1000);
+                    } else {
+                        mask(res, ' ');
+                    }
+                });
+            } else if ($('.active').attr('index') == 2) {//微信
+                //
+            }
+        })
+
+
+    })
+</script>
+</html>

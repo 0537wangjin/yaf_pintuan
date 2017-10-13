@@ -1,0 +1,44 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/account" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        交易记录
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="c-container box-background">
+    <ul class="my-back-list"></ul>
+    {% for item in list %}
+    <li class="back-item clearfix">
+        <div class="item-left am-fl"><img src="{{item.avatar}}" alt="" style="border-radius: 50%;" /></div>
+        <div class="item-right">
+            <p>{{item.content}}</p>
+            <p class="gray card-phone">{{item.regdate}}</p>
+        </div>
+        {% if item.keytype=='5' %}
+        <span class="am-fr green active">-{{item.total_fee}}</span>
+        {% endif %}
+        {% if item.keytype=='1' %}
+        <span class="am-fr green">+{{item.total_fee}}</span>
+        {% endif %}
+        {% if item.keytype=='2' %}
+        <span class="am-fr green active">-{{item.total_fee}}</span>
+        {% endif %}
+    </li>
+    {% endfor %}
+</div>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+</script>
+{% endblock %}

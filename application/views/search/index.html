@@ -1,0 +1,49 @@
+{% extends '/layout_index.php' %}
+{% block content %}
+<form method="get" action="/index/new">
+<header data-am-widget="header" class="am-header ch-search-header">
+    <div class="search-wrap">
+        <input type="search" name="keyword" placeholder="搜索：商品关键词进行搜索">
+        <i class="icon-search"></i>
+    </div>
+    <a class="news-num" href="/">取消</a>
+</header>
+</form>
+<div class="ch-container">
+
+    <div class="ch-search-hot">
+        <div class="title">热门搜索</div>
+        <div class="ch-hot-list">
+            {% for item in searchkey %}
+            <a class="item" href="/index/new/?keyword={{item.title}}">{{item.title}}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <!--<div class="ch-search-hot">
+        <div class="title">历史搜索</div>
+        <ul class="am-list ch-his-list">
+            <li><a href="#">牛奶咖啡1 <i class="ch-close"></i></a></li>
+            <li><a href="#">牛奶咖啡2 <i class="ch-close"></i></a></a></li>
+            <li><a href="#">牛奶咖啡3 <i class="ch-close"></i></a></a></li>
+        </ul>
+
+        <div class="ch-his-clear"><i class="ch-del"></i>清空历史搜索</div>
+    </div>-->
+
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(function () {
+        // 历史搜索单个删除
+        $('.ch-close').on('click', function () {
+            $(this).parents('li').remove();
+        });
+
+        $('.ch-his-clear').on('click', function () {
+            $('.ch-his-list li').remove();
+            $(this).hide();
+        });
+    });
+</script>
+{% endblock %}

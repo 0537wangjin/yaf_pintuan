@@ -1,0 +1,32 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<div class="my-header-details">
+    <span class="icon-return" onclick="location.href='/index/gold'"></span>
+</div>
+<div class="container">
+    <div data-am-widget="slider" class="am-slider am-slider-a1" data-am-slider='{&quot;directionNav&quot;:false}'>
+        <ul class="am-slides">
+            {% for item in photolist %}
+            <li>
+                <img src="{{item.imgurl}}"/>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="goods-name-wrap">
+        <h3>{{goods.title}}</h3>
+        <p>{{goods.coins}}积分<span>{{goods.fname}}</span></p>
+    </div>
+    <div class="goods-details-wrap">
+        {% autoescape false %}
+        {{goods.remark}}
+        {% endautoescape %}
+    </div>
+    <div class="redeem-now" onclick="location.href='/index/goldConfirm?id={{goods.id}}'">
+        立即兑换
+    </div>
+</div>
+{% endblock %}

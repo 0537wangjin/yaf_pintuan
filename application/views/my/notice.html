@@ -1,0 +1,108 @@
+{% extends '/layout.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css" />
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        消息
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="empty tt-right">清空</i>
+        </a>
+    </div>
+</header>
+<div class="il-container">
+    <ul class="am-cf info-list">
+        <li class="list-item {% if keytype == 2%}active{% endif %}">
+            <a href="/my/notice?keytype=2" class="item">订单消息</a>
+        </li>
+        <li class="list-item {% if keytype == 1%}active{% endif %}">
+            <a href="/my/notice?keytype=1" class="item">系统消息</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <ul class="list-ul">
+            {% for item in list %}
+            <div class="swiper-container">
+                <div class="swiper-wrapper base-wrap">
+                    <div class="swiper-slide slide">
+                        <div class="base-item news-item">
+                            <div class="station-img" style="overflow: visible;">
+                                <img class="icon" src="/assets/img/tt-order.png" width="43" height="43">
+                            </div>
+                            <div class="news-cont">
+                                <h4 class="title">{{item.content}}</h4>
+                                <div class="time">{{item.regdate}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide" style="width: 80px;">
+                        <div class="btn del-btn" title="{{item.id}}">删除</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </ul>
+    </div>
+</div>
+<!--清除弹出框-->
+<div class="am-modal am-modal-alert il-mask" tabindex="-1" id="my-alert">
+    <div class="am-modal-dialog">
+        <div class="am-modal-bd">
+            确定要清空消息列表吗
+            <p class="gray" style="font-size:12px;">一旦清空将不能找回</p>
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn gray">取消</span>
+            <span class="am-modal-btn red" id="del-all">确定</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/assets/js/swiper.min.js"></script>
+<script>
+    $(function () {
+        //滑动删除
+        var swiper = new Swiper('.swiper-container', {
+            slidesPerView: 'auto',
+            paginationClickable: true,
+            spaceBetween: 0
+        });
+        $('.swiper-container').each(function() {
+            var h = $(this).find('.base-item').outerHeight();
+            $(this).find('.del-btn').css({
+                'height': h + 'px',
+                'lineHeight': h + 'px'
+            });
+        });
+        //点击删除
+        $('.del-btn').on('click', function () {
+            var id = $(this).attr('title');
+            $(this).parents('.swiper-container').remove();
+            $.get('/my/noticeDel?id='+id, function(res){
+                if (res != 'success'){
+                    alert(res);
+                }
+            });
+
+        });
+        //全部删除
+        $('#del-all').on('click', function () {
+            $('.swiper-container').remove();
+            $('#my-alert').modal('close');
+            $.get('/my/noticeClear?keytype={{keytype}}', function(res){
+                if (res != 'success'){
+                    alert(res);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

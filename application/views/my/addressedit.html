@@ -1,0 +1,213 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/address?keytype={{keytype}}" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        {{pagetitle}}
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<form method="post" action="/my/addressSave">
+    <input type="hidden" value="{{info.id}}" name="id" id="id">
+    <input type="hidden" name="city" id="city" value="">
+<div class="aa-container">
+    <ul class="add-list">
+        <li class="list-item"><span class="left">姓名</span><input type="text" name="username" id="username" placeholder="请输入" class="txt" value="{{info.username}}"/></li>
+        <li class="list-item"><span class="left">电话</span><input type="text" name="tel" id="tel" placeholder="请输入" class="txt" value="{{info.tel}}"/></li>
+        <li class="list-item address"><span class="left">所在地区</span><span id="choose">{{info.province}} {{info.city}} {{info.area}}</span><i
+                class="arrow-right"></i></li>
+    </ul>
+    <textarea name="address" id="address" rows="2" cols="" placeholder="请填写详细地址" class="detail-txt">{{info.address}}</textarea>
+    <div class="sever" onclick="savevalidate()">保存</div>
+</div>
+</form>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function savevalidate() {
+        $('#city').val( $('#choose').text() );
+        var id = $('#id').val();
+        var city = $('#city').val();
+        var username = $('#username').val();
+        var tel = $('#tel').val();
+        var address = $('#address').val();
+
+        if( username=='' ){
+            mask('请填写您的姓名!');
+            return;
+        }
+        if( tel=='' ){
+            mask('请填写您的电话!');
+            return;
+        }
+        if( address=='' ){
+            mask('请填写详细地址!');
+            return;
+        }
+
+
+
+        $.ajax({
+            type:'post',
+            url:'/my/addressSave',
+            data:'username='+username+'&tel='+tel+'&city='+city+'&id='+id+'&address='+address,
+            error:function(){
+                mask('error');
+            },
+            success:function(res){
+                if (res == 'success') {
+                    mask('保存成功!');
+                    setTimeout(function(){
+                        location.href = '/my/address?keytype={{keytype}}';
+                    }, 1000);
+                } else {
+                    mask(res);
+                }
+            }
+        });
+    }
+    $(function () {
+        var nameEl = document.getElementById('choose');
+
+        var first = [];
+        /* 省，直辖市 */
+        var second = [];
+        /* 市 */
+        var third = [];
+        /* 镇 */
+
+        var selectedIndex = [0, 0, 0];
+        /* 默认选中的地区 */
+
+        var checked = [0, 0, 0];
+        /* 已选选项 */
+
+        function creatList(obj, list) {
+            obj.forEach(function (item, index, arr) {
+                var temp = new Object();
+                temp.text = item.name;
+                temp.value = index;
+                list.push(temp);
+            })
+        }
+
+        creatList(city, first);
+
+        if (city[selectedIndex[0]].hasOwnProperty('sub')) {
+            creatList(city[selectedIndex[0]].sub, second);
+        } else {
+            second = [{
+                text: '',
+                value: 0
+            }];
+        }
+
+        if (city[selectedIndex[0]].sub[selectedIndex[1]].hasOwnProperty('sub')) {
+            creatList(city[selectedIndex[0]].sub[selectedIndex[1]].sub, third);
+        } else {
+            third = [{
+                text: '',
+                value: 0
+            }];
+        }
+
+        var picker = new Picker({
+            data: [first, second, third],
+            selectedIndex: selectedIndex,
+            title: '地址选择'
+        });
+
+        picker.on('picker.select', function (selectedVal, selectedIndex) {
+            var text1 = first[selectedIndex[0]].text;
+            var text2 = second[selectedIndex[1]].text;
+            var text3 = third[selectedIndex[2]] ? third[selectedIndex[2]].text : '';
+
+            nameEl.innerText = text1 + ' ' + text2 + ' ' + text3;
+        });
+
+        picker.on('picker.change', function (index, selectedIndex) {
+            if (index === 0) {
+                firstChange();
+            } else if (index === 1) {
+                secondChange();
+            }
+
+            function firstChange() {
+                second = [];
+                third = [];
+                checked[0] = selectedIndex;
+                var firstCity = city[selectedIndex];
+                if (firstCity.hasOwnProperty('sub')) {
+                    creatList(firstCity.sub, second);
+
+                    var secondCity = city[selectedIndex].sub[0]
+                    if (secondCity.hasOwnProperty('sub')) {
+                        creatList(secondCity.sub, third);
+                    } else {
+                        third = [{
+                            text: '',
+                            value: 0
+                        }];
+                        checked[2] = 0;
+                    }
+                } else {
+                    second = [{
+                        text: '',
+                        value: 0
+                    }];
+                    third = [{
+                        text: '',
+                        value: 0
+                    }];
+                    checked[1] = 0;
+                    checked[2] = 0;
+                }
+
+                picker.refillColumn(1, second);
+                picker.refillColumn(2, third);
+                picker.scrollColumn(1, 0)
+                picker.scrollColumn(2, 0)
+            }
+
+            function secondChange() {
+                third = [];
+                checked[1] = selectedIndex;
+                var first_index = checked[0];
+                if (city[first_index].sub[selectedIndex].hasOwnProperty('sub')) {
+                    var secondCity = city[first_index].sub[selectedIndex];
+                    creatList(secondCity.sub, third);
+                    picker.refillColumn(2, third);
+                    picker.scrollColumn(2, 0)
+                } else {
+                    third = [{
+                        text: '',
+                        value: 0
+                    }];
+                    checked[2] = 0;
+                    picker.refillColumn(2, third);
+                    picker.scrollColumn(2, 0)
+                }
+            }
+
+        });
+
+        picker.on('picker.valuechange', function (selectedVal, selectedIndex) {
+            console.log(selectedVal);
+            console.log(selectedIndex);
+        });
+
+        nameEl.addEventListener('click', function () {
+            picker.show();
+        });
+
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/my" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        我的收藏
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right">清空</i>
+        </a>
+    </div>
+</header>
+<!--详情-->
+<div class="mc-container">
+    <ul class="collect-list">
+        {% for item in list %}
+        <li class="list-item">
+            <a href="javascript:;" class="href-item">
+                <div class="content">
+                    <img src="{{item.imgurl}}"/>
+                    <div class="calcel" title="{{item.goodsid}}"><span class="tip"></span>取消收藏</div>
+                    {% if item.rush > 0 %}
+                    <div class="f-buy">
+                        团购
+                        <span class="price">￥{{item.rushprice}}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="title">{{item.name}}</div>
+                <!--团购商品-->
+                <div class="bottom am-cf"><span class="am-fl price">￥<i>{{item.price}}</i></span><span
+                        class="cla am-fr">{{item.secondtype}}</span></div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<!--清除弹出框-->
+<div class="am-modal am-modal-alert il-mask" tabindex="-1" id="my-alert">
+    <div class="am-modal-dialog">
+        <div class="am-modal-bd">
+            确定要清空收藏商品吗
+            <p class="gray" style="font-size:12px;">一旦清空将不能找回</p>
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn gray">取消</span>
+            <span class="am-modal-btn red" id="del-all">确定</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="/assets/js/common.js"></script>
+<script>
+    //点击取消收藏
+    $('.calcel').on('click', function () {
+
+        $.get('/my/favRmove?goodsid=' + $(this).attr('title'), function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+
+            } else {
+                alert(res);
+            }
+        });
+        $(this).parents('.list-item').remove();
+
+    });
+    //点击清空
+    $('#del-all').on('click', function () {
+        $.get('/my/favClear', function (res) {
+            if (res == 'success') {
+                mask('操作成功!');
+                setTimeout(function () {
+                    location.href = '/my/fav';
+                }, 1000);
+            } else {
+                alert(res);
+            }
+        });
+        /* $('.list-item').remove(); */
+    });
+</script>
+{% endblock%}

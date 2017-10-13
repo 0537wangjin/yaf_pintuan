@@ -1,0 +1,57 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="/my/my" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">
+        账户
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="#right-link" class="" data-am-modal="{target:'#my-alert'}">
+            <i class="tt-right"></i>
+        </a>
+    </div>
+</header>
+<div class="account-container">
+    <div class="content">
+        <div class="top">
+            <p class="name">￥账户余额</p>
+            <div class="price">{{ feeaccount }}元</div>
+        </div>
+        <div class="bottom">
+            <div class="left"><span class="cz"></span>充值</div>
+            <div class="right" data-am-modal="{target: '#my-actions'}"><span class="tx"></span>提现</div>
+            <span class="dline"></span>
+        </div>
+    </div>
+    <div class="count-record">
+        <a href="/my/pay" class="item-href">
+            <span>交易记录</span>
+            <i class="arrow-right"></i>
+        </a>
+    </div>
+</div>
+<!--提现窗口-->
+<!--弹出框--->
+<div class="am-modal-actions" id="my-actions">
+    <div class="am-modal-actions-group">
+        <ul class="am-list am-mask _mask">
+            <li>
+                <a href="/my/takezfb" class="gray">支付宝提现</a>
+            </li>
+            <li>
+                <a href="/my/takebank" class="gray">银行卡提现</a>
+            </li>
+        </ul>
+    </div>
+    <div class="am-modal-actions-group" style="border-radius: 3px;">
+        <button class="am-btn am-btn-block as-btn" data-am-modal-close
+                style="background:#fff;color:#9d9d9d;font-size: 14px;">取消
+        </button>
+    </div>
+</div>
+
+{% endblock %}

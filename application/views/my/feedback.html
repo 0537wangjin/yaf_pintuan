@@ -1,0 +1,46 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+<div class="am-header-left am-header-nav">
+<a href="/my/set" class="">
+<i class="arrow-left"></i>
+</a>
+</div>
+<h1 class="am-header-title tt-title">
+意见反馈
+</h1>
+<div class="am-header-right am-header-nav">
+<a href="javascript:;" class="" onclick="save()">
+<i class="tt-right">保存</i>
+</a>
+</div>
+</header>
+<div class="fb-container">
+<textarea name="content" rows="4" cols="" class="word" placeholder="请填写您的宝贵意见和建议（限140字）" id="content"></textarea>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    function save()
+    {
+        var content = $('#content').val();
+        if(content==''){
+            mask('请填写您的宝贵意见和建议!');
+            return;
+        }
+        $.get('/my/feedbackSave?content='+ content, function(res){
+            if(res=='success'){
+                mask('感谢, 提交成功!');
+                setTimeout(function(){
+                    location.href = '/my/set';
+                }, 1000)
+            }else{
+                alert(res);
+            }
+        });
+    }
+</script>
+{% endblock%}

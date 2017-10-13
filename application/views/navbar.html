@@ -1,0 +1,50 @@
+<!--底部导航-->
+<div class="am-cf my-navbar">
+    <ul class="am-cf am-avg-sm-4">
+        <li>
+            <a href="/">
+                {% if active=='index' %}
+                <img src="/assets/img/ch-index.png"/>
+                <span class="active">首页</span>
+                {% else %}
+                <img src="/assets/img/zb_6.png"/>
+                <span >首页</span>
+                {% endif %}
+            </a>
+        </li>
+        <li>
+            <a href="/category">
+                {% if active=='category' %}
+                <img src="/assets/img/zb_15.png"/>
+                <span class="active">分类</span>
+                {% else %}
+                <img src="/assets/img/zb_7.png"/>
+                <span >分类</span>
+                {% endif %}
+            </a>
+        </li>
+        <li>
+            <a href="/cart">
+                {% if active=='cart' %}
+                <img src="/assets/img/zb_8.png"/>
+                <span class="active" style="color: #ef1e37;">购物车</span>
+                {% else %}
+                <img src="/assets/img/tt-sc.png"/>
+                <span >购物车</span>
+                {% endif %}
+            </a>
+        </li>
+        <li>
+            <a href="/my">
+                {% if active=='my' %}
+                <img src="/assets/img/tt-my.png"/>
+                <span class="active">个人中心</span>
+                {% else %}
+                <img src="/assets/img/zb_9.png"/>
+                <span >个人中心</span>
+                {% endif %}
+            </a>
+        </li>
+    </ul>
+</div>
+<!--./底部导航-->

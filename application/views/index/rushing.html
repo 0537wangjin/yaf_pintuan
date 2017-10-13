@@ -1,0 +1,32 @@
+{% extends '/layout_index.php' %}
+{% block content %}
+<link rel="stylesheet" href="/assets/css/swiper.min.css"/>
+<link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+<link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+<header class="my-header-wrap">
+    <a class="icon-back" onclick="history.go(-1)"></a>
+    <h1>{{pagetitle}}</h1>
+</header>
+<div class="opening-round-wrap">
+{% for item in list %}
+    <div class="opening-round">
+        <img src="{{item.avatar}}"/>
+        <h3>{{item.nickname}}</h3>
+        <p>还差{{item.surplus}}人，剩余{{item.sec}}<a href="javascript:rushjoin('{{item.id}}')">参团</a></p>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+    function rushjoin(id) {
+        $.get('/index/cartAddRush?goodsid={{goodsid}}', function (res) {
+            if (res == 'success') {
+                location.href='/cart/confirm?goods={{goodsid}}&rush=1&rushid='+id;
+            } else {
+                mask(res, ' ');
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{{pagetitle}}</title>
+    <link rel="stylesheet" href="/assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="/assets/css/zb-wsc.css"/>
+    <link rel="stylesheet" href="/assets/css/zb_icon.css"/>
+</head>
+<body>
+<header class="my-header-wrap">
+    <h1>购物车</h1>
+</header>
+<input type="hidden" value="" name="selectid" id="selectid">
+<div class="container" style="padding-bottom: 150px;">
+    <div class="shop-cart-wrap">
+        {% for item in list %}
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" id="slide1">
+                    <div class="shop-cart-list">
+                        <div class="shop-cart am-cf">
+                            <span class="icon-check" index=0 title="{{item.goodsid}}"></span>
+                            <div class="am-fl">
+                                <img src="{{item.imgurl}}"/>
+                            </div>
+                            <div class="shop-cart-content">
+                                <h3>{{item.name}}</h3>
+                                <p>￥<b>{{item.goodsprice}}</b></p>
+                            </div>
+                            <div class="goods-number">
+                                <span class="icon-jian" title="{{item.goodsid}}"></span>
+                                <b>{{item.buycount}}</b>
+                                <span class="icon-jia" title="{{item.goodsid}}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide delete" id="slide2" title="{{item.goodsid}}">
+                    <span>删除</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+<!--底部结算-->
+<div class="settlement-wrap">
+    <span class="icon-check" id="check-all" index=0></span>
+    <b>全选</b>
+    <button onclick="orderConfirm()">结算</button>
+    <em class="text-y">合计：￥<i>0.00</i></em>
+</div>
+<!--底部导航-->
+{% include '/navbar.html' %}
+</body>
+<script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="/assets/js/swiper.min.js"></script>
+<script type="text/javascript" src="/assets/js/common.js"></script>
+<script>
+    $(function () {
+        //滑动
+        var swiper = new Swiper('.swiper-container', {
+            slidesPerView: 'auto',
+            paginationClickable: true,
+            spaceBetween: 0
+        });
+        //点击全选按钮
+        var checkall = $("#check-all");
+        var check = $(".shop-cart-wrap .icon-check");
+        var num = check.length;
+        checkall.on("click", function () {
+            if ($(this).attr("index") == 0) {
+                check.addClass('active');
+                check.attr("index", 1);
+                $(this).addClass('active');
+                $(this).attr("index", 1);
+            } else if ($(this).attr("index") == 1) {
+                check.removeClass('active');
+                check.attr("index", 0);
+                $(this).removeClass('active');
+                $(this).attr("index", 0)
+            }
+            ifAll();
+            totlePrice()
+        })
+        check.on("click", function () {
+            if ($(this).attr("index") == 0) {
+                $(this).addClass('active');
+                $(this).attr("index", 1);
+            } else if ($(this).attr("index") == 1) {
+                $(this).removeClass('active');
+                $(this).attr("index", 0)
+            }
+            ifAll();
+            totlePrice()
+        })
+        function ifAll() {
+            var selectedNum = $(".shop-cart-wrap .active").length;
+            if (num == selectedNum) {
+                checkall.addClass('active');
+                checkall.attr('index', 1)
+            } else {
+                checkall.removeClass('active');
+                checkall.attr('index', 0)
+            }
+//				console.log(num+'....'+selectedNum)
+        }
+
+        //点击删除
+        $('.delete').on('click', function () {
+            $(this).parents('.swiper-container').remove();
+            $.get('/cart/goodsDel?goodsid=' + $(this).attr("title"), function (res) {
+                if (res == 'success') {
+                    mask('删除成功', ' ');
+                } else {
+                    mask(res, ' ');
+                }
+            });
+
+        })
+        //数量的加减
+        $(".goods-number span").on("click", function () {
+            var index = $(this).parents('.swiper-container').index();
+            var num = $('.swiper-container').eq(index).find('.goods-number b').html();
+            if ($(this).attr("class") == "icon-jian") {
+                //减号	
+                num = num > 1 ? (--num) : 1;
+                $.get('/cart/cartMinus?goodsid=' + $(this).attr("title"), function (res) {
+                    if (res == 'success') {
+                        // mask('添加成功', ' ');
+                    } else {
+                        mask(res, ' ');
+                    }
+                });
+
+            } else if ($(this).attr("class") == "icon-jia") {
+                //加号
+                num++;
+                $.get('/index/cartAdd?goodsid=' + $(this).attr("title"), function (res) {
+                    if (res == 'success') {
+                        // mask('添加成功', ' ');
+                    } else {
+                        mask(res, ' ');
+                    }
+                });
+            }
+            $('.swiper-container').eq(index).find('.goods-number b').html(num);
+            totlePrice()
+        })
+        // 计算总价格
+        function totlePrice() {
+            var prices = 0;
+            //查找所有商品中被选中的商品
+            var singleButtons = $(".shop-cart-wrap .icon-check[index=1]");
+            var selectid = '';
+            singleButtons.each(function () {
+                selectid += $(this).attr("title") + ',';
+                var price = $(this).parents(".shop-cart").find(".shop-cart-content p b").html();
+                var count = $(this).parents(".shop-cart").find(".goods-number b").html();
+                var _totlePrice = price * count;
+                prices += _totlePrice;
+            })
+            $('#selectid').val(selectid);
+            console.log(selectid);
+            var priceStr = prices.toFixed(2);
+            $(".settlement-wrap i").html(priceStr);
+        }
+
+    });
+    // 结算
+    function orderConfirm() {
+        if ($('#selectid').val() == ''){
+            mask('请选择要结算的商品!', ' ');
+            return false;
+        }
+        location.href = '/cart/confirm?goods=' + $('#selectid').val()
+    }
+</script>
+</html>

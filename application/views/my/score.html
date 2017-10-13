@@ -1,0 +1,35 @@
+{% extends '/layout.php' %}
+{% block content %}
+<header data-am-widget="header" class="am-header tt-header">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="arrow-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title tt-title">积分</h1>
+</header>
+<div class="in-container">
+    <div class="in-top">
+        <div class="content">
+            <div class="num">积分</br><span>{{ user_score }}</span></div>
+            <div class="grade">v{{ user_level }}</div>
+        </div>
+        <div class="name">还差<i>{{ user_score_minus }}</i>积分即可升为V{{ user_level+1 }}</div>
+    </div>
+    <div class="inter-wrapper">
+        <div class="title">积分明细</div>
+        <ul class="wrapper">
+            {% for item in list %}
+            <li class="list-item">
+                <div class="content">
+                    <div class="name">{{item.title}}</div>
+                    <div class="time">{{item.regdate}}</div>
+                </div>
+                {% if item.num > 0 %}<div class="num add">+{{item.num}}</div>{% else %}<div class="num del">{{item.num}}</div>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</body>
+{% endblock %}
